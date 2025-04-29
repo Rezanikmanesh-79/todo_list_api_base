@@ -1,6 +1,13 @@
 version: "3.9"
 
 services:
+  redis:
+    container_name: redis-2
+    image: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+
   backend:
     container_name: back_todo
     build:
@@ -14,6 +21,35 @@ services:
       - SECRET_KEY='django-insecure-0ves$6-v9(%2)0ec8zlzk6_46lq*ra(u8ga*cxwlxn(5qwp$6b'
       - DEBUG=True
     command: python manage.py  runserver 0.0.0.0:8000
+  celery:
+    container_name: celery-2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./core:/app
+    depends_on:
+      - redis
+      - backend
+    command: celery -A core worker --loglevel=info  
+    environment:
+      - SECRET_KEY=django-insecure-0ves$6-v9(%2)0ec8zlzk6_46lq*ra(u8ga*cxwlxn(5qwp$6b
+      - DEBUG=True
+
+  celery_worker2:
+    container_name: celery_worker2-2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./core:/app
+    depends_on:
+      - redis
+      - backend
+    command: celery -A core worker --loglevel=info
+    environment:
+      - SECRET_KEY=django-insecure-0ves$6-v9(%2)0ec8zlzk6_46lq*ra(u8ga*cxwlxn(5qwp$6b
+      - DEBUG=True
   smtp4dev:
     image: rnwood/smtp4dev:v3
     restart: always

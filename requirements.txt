@@ -28,3 +28,7 @@ djoser
 djangorestframework_simplejwt
 social-auth-app-django
 faker
+django-cors-headers
+# ==================== Background proccess and cache ====================
+celery
+redis
