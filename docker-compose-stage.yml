@@ -15,12 +15,15 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./core:/app
+      - volume_static:/app/static/
+      - volume_media:/app/media/
     ports:
       - "8000:8000"
     environment:
       - SECRET_KEY='django-insecure-0ves$6-v9(%2)0ec8zlzk6_46lq*ra(u8ga*cxwlxn(5qwp$6b'
       - DEBUG=True
-    command: python manage.py  runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000
+
   celery:
     container_name: celery-2
     build:
@@ -50,20 +53,18 @@ services:
     environment:
       - SECRET_KEY=django-insecure-0ves$6-v9(%2)0ec8zlzk6_46lq*ra(u8ga*cxwlxn(5qwp$6b
       - DEBUG=True
-  smtp4dev:
-    image: rnwood/smtp4dev:v3
-    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-2
     ports:
-      - '5000:80'
-      - '2525:25'
-      - '1143:143'
-
+      - "80:80"
     volumes:
-        - smtp4dev-data:/smtp4dev
-    environment:
-      - ServerOptions__HostName=smtp4dev
-
-
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - volume_static:/home/app/static/
+      - volume_media:/home/app/media/
+    restart: always
 
 volumes:
-  smtp4dev-data:
+  volume_static: {}
+  volume_media: {}
