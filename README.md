@@ -1,5 +1,4 @@
 
-````markdown
 # ✅ Todo List API Base
 
 A simple RESTful API built with Django REST Framework to manage a todo list. This project is a basic starter template for building APIs with authentication and CRUD operations.
